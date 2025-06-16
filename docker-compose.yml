@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8
+    container_name: mysql-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: database_dev
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+
+  flask:
+    build: ./backend
+    container_name: flask-container
+    restart: always
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: 12345
+      DB_NAME: database_dev
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+
+
+environment:
+  DB_HOST: mysql
+  DB_USER: root
+  DB_PASSWORD: 12345
+  DB_NAME: database_dev
